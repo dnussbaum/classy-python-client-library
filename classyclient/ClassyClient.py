@@ -46,7 +46,7 @@ class ClassyClient:
 			params.update({"per_page": per_page})
 
 		r = self.__session.request(method, ClassyClient.URL_BASE + endpoint, params=params, json=data, headers=headers)
-		print r.request.url
+
 		if r.status_code is not requests.codes.ok:
 			self.handle_error(r)
 
