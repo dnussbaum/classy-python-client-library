@@ -36,7 +36,7 @@ class ClassyClientResponse:
 		"""
 		if not self.collection:
 			raise ClassyRequestError("Not a collection")
-		if self.current_page is self.last_page:
+		if self.current_page is self.last_page or not self.__next_page_url:
 			return False
 
 		self.__response.request.url = self.__next_page_url
@@ -51,7 +51,7 @@ class ClassyClientResponse:
 		"""
 		if not self.collection:
 			raise ClassyRequestError("Not a collection")
-		if self.current_page is 1:
+		if self.current_page is 1 or not self.__previous_page_url:
 			return False
 
 		self.__response.request.url = self.__prev_page_url
