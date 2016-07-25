@@ -71,4 +71,4 @@ class ClassyClient:
 	def handle_error(self, response):
 		"""Handle Classy errors."""
 		error = response.json()['error']
-		raise ClassyResponseError(error)
+		raise ClassyRequestError(error)
