@@ -52,7 +52,7 @@ response.data # JSON object
 import classyclient
 
 client = classclient.ClassyClient([API KEY],[API SECRET])
-response = client.get("organizations/0123456/activity")
+activity = client.get("organizations/0123456/activity")
 
 response.collection # True
 
