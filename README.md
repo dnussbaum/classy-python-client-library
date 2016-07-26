@@ -56,11 +56,8 @@ response = client.get("organizations/0123456/activity")
 
 response.collection # True
 
-response.current_page # 1
-response.data # First page's data
-response.next_page() # True, if there is a next page
-response.current_page # 2
-response.data # Second page's data
+for item in activity:
+	print item['type']
 ```
 
 ###Updating Resources
