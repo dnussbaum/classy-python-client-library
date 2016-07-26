@@ -47,6 +47,7 @@ response.data # JSON object
 ```
 
 ###Fetching a Collection of Resources
+When using a response object as an iterator, the next page of results will automatically be requested as needed. 
 
 ```
 import classyclient
