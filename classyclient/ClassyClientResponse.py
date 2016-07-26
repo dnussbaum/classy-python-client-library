@@ -25,9 +25,35 @@ class ClassyClientResponse:
 			self.data = json['data']
 			self.__next_page_url = json['next_page_url']
 			self.__prev_page_url = json['prev_page_url']
+			self.cursor = 0
 		else:
 			self.collection = False
 			self.data = json
+
+	def __len__(self):
+		"""Return the length of the result"""
+		if not self.collection:
+			raise ClassyRequestError("Not a collection")
+		return self.total
+
+	def __iter__(self):
+		return self
+
+	def next(self):
+		"""Get the next item. Handles paging when needed."""
+		if not self.collection:
+			raise ClassyRequestError("Not a collection")
+		if self.cursor < len(self.data):
+			item = self.data[self.cursor]
+			self.cursor += 1
+			return item
+		if self.next_page():
+			self.cursor = 0
+			item = self.data[self.cursor]
+			self.cursor += 1
+			return item
+		else:
+			raise StopIteration
 
 	def next_page(self):
 		"""
