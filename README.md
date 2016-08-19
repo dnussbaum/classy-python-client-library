@@ -1,11 +1,9 @@
 # Classy API Python Client Library
 
 ##Description
-**This project is still very much a work in progress. There is no guarantee that it will work properly.**
+I needed to interact with the Classy API but they didn't provide client libraries. This is a Python client I built to make those interactions a little easier.
 
-I need to interact extensively with the [Classy](classy.org) API ([docs here](https://developers.classy.org/api-docs/v2/index.html)) but they provide no client libraries. This is a Python client I built that makes interacting with their API a little easier.
-
-I have no affiliation with Classy.
+**I have no affiliation with Classy.**
 
 ##Dependencies
 - [Requests](http://docs.python-requests.org/en/master/): `pip install requests`
