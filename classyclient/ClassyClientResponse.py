@@ -1,3 +1,4 @@
+import json
 from Exceptions import *
 
 class ClassyClientResponse:
@@ -30,6 +31,9 @@ class ClassyClientResponse:
         else:
             self.collection = False
             self.data = json
+
+    def __str__(self):
+        return json.dumps(self.data)
 
     def __len__(self):
         """Return the length of the result"""
