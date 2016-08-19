@@ -4,71 +4,90 @@ from ClassyClientResponse import ClassyClientResponse
 from Exceptions import *
 
 class ClassyClient:
-	"""Classy Client Library."""
+    """Classy Client Library."""
 
-	URL_BASE = "https://api.classy.org/2.0/"
+    URL_BASE = "https://api.classy.org/2.0/"
+    TOKEN_BASE = "https://api.classy.org/oauth2/auth"
+    TOKEN = None
 
-	def __init__(self, client_id, client_secret):
-		self.__client_id = client_id
-		self.__client_secret = client_secret
-		self.__access_token = self.__generate_token()
-		self.__session = requests.Session()
+    def __init__(self, client_id, client_secret):
+        self.__client_id = client_id
+        self.__client_secret = client_secret
+        self.__access_token = self.__generate_token()
+        self.__session = requests.Session()
 
-	def __generate_token(self):
-		"""
-		Get a Classy API OAuth token.
-		See: https://developers.classy.org/overview/authentication
-		"""
-		response = requests.post("https://api.classy.org/oauth2/auth", params={
-			"grant_type": "client_credentials",
-			"client_id": self.__client_id,
-			"client_secret": self.__client_secret
-		}).json()
+    def __generate_token(self):
+        """
+        Get a Classy API OAuth token.
+        See: https://developers.classy.org/overview/authentication
+        """
 
-		if 'error' in response:
-			raise ClassyAuthError("Invalid API key or secret")
+        if ClassyClient.TOKEN:
+            return ClassyClient.TOKEN
 
-		return response['access_token']
+        response = requests.post(ClassyClient.TOKEN_BASE, params={
+            "grant_type": "client_credentials",
+            "client_id": self.__client_id,
+            "client_secret": self.__client_secret
+        }).json()
 
-	def __call(self, method, endpoint, params={}, data={}, expand=[], page=None, per_page=None):
-		"""Make a request."""
-		headers = {'Authorization': "Bearer " + self.__access_token}
+        if "error" in response:
+            raise ClassyAuthError("Invalid API key or secret")
 
-		endpoint = endpoint.strip("/")
+        ClassyClient.TOKEN = response["access_token"]
 
-		if expand:
-			params.update({"with":",".join(expand)})
+        return ClassyClient.TOKEN
 
-		if page:
-			params.update({"page": page})
+    def __call(self, method, endpoint, params=None, data=None):
+        """Make a request."""
+        params = params or []
+        data = data or {}
 
-		if per_page:
-			params.update({"per_page": per_page})
+        headers = {"Authorization": "Bearer {}".format(self.__access_token)}
 
-		r = self.__session.request(method, ClassyClient.URL_BASE + endpoint, params=params, json=data, headers=headers)
+        endpoint = endpoint.strip("/")
 
-		if r.status_code is not requests.codes.ok:
-			self.handle_error(r)
+        r = self.__session.request(
+            method,
+            ClassyClient.URL_BASE + endpoint,
+            params=params,
+            json=data,
+            headers=headers
+        )
 
-		return ClassyClientResponse(r, self.__session)
+        if r.status_code is not requests.codes.ok:
+            self.__handle_error(r)
 
-	def get(self, endpoint, params={}, expand=[], page=None, per_page=None):
-		"""Make a GET request."""
-		return self.__call("GET", endpoint, params=params, expand=expand, page=page, per_page=per_page)
+        return ClassyClientResponse(r, self.__session)
 
-	def post(self, endpoint, data={}):
-		"""Make a POST request."""
-		return self.__call("POST", endpoint, data=data)
+    def get(self, endpoint, expand=None, page=None, per_page=None, **params):
+        """Make a GET request."""
+        expand = expand or []
 
-	def put(self, endpoint, data, params={}):
-		"""Make a PUT request."""
-		return self.__call("PUT", endpoint, params=params, data=data)
+        if expand:
+            params.update({"with":",".join(expand)})
 
-	def delete(self, endpoint):
-		"""Make a DELETE request."""
-		return self.__call("DELETE", endpoint, params=params, data=data)
+        if page:
+            params.update({"page": page})
 
-	def handle_error(self, response):
-		"""Handle Classy errors."""
-		error = response.json()['error']
-		raise ClassyRequestError(error)
+        if per_page:
+            params.update({"per_page": per_page})
+
+        return self.__call("GET", endpoint, params=params)
+
+    def post(self, endpoint, **data):
+        """Make a POST request."""
+        return self.__call("POST", endpoint, data=data)
+
+    def put(self, endpoint, data, **params):
+        """Make a PUT request."""
+        return self.__call("PUT", endpoint, params=params, data=data)
+
+    def delete(self, endpoint):
+        """Make a DELETE request."""
+        return self.__call("DELETE", endpoint, params=params, data=data)
+
+    def __handle_error(self, response):
+        """Handle Classy errors."""
+        error = response.json()["error"]
+        raise ClassyRequestError(error)

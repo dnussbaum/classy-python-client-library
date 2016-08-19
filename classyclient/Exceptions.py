@@ -1,5 +1,8 @@
 class ClassyAuthError(Exception):
-	pass
+    pass
 
 class ClassyRequestError(Exception):
-	pass
+    pass
+
+class ClassyNotACollection(Exception):
+    pass
