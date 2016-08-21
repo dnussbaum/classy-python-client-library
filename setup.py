@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="classyclient",
-    version="1.0.0",
+    version="1.0.1",
     description="A package for interacting with Classy's API in Python.",
     url="https://github.com/dnussbaum/classy-python-client-library",
     author="Daniel Nussbaum",
