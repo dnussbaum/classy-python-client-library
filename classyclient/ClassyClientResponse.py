@@ -10,7 +10,6 @@ class ClassyClientResponse:
         self.last_page = None
         self.current_page = None
         self.__response = response
-        print self.__response.url
         self.__session = session
         self.__refresh()
 
